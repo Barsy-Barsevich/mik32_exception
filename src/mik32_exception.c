@@ -102,12 +102,6 @@ void exception_caller(mik32_exception_test_t exception)
             "csrrs      x0, mhartid, t0"    "\n\t"
         );
         break;
-    case EXCEPTION_INSTRUCTION_ADDRESS_MISALIGNED:
-        asm volatile(
-            "li         t0, 0x7FFFFFFF"     "\n\t"
-            "jalr       ra, t0, 0"          "\n\t"
-        );
-        break;
     case EXCEPTION_LOAD_ADDRESS_MISSALIGNED:
         asm volatile(
             "li         s0, 0x7FFFFFFF"     "\n\t"

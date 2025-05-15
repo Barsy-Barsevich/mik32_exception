@@ -26,7 +26,6 @@ int main()
         
         HAL_DelayMs(500);
 
-        // exception_caller(EXCEPTION_INSTRUCTION_ADDRESS_MISALIGNED);
         // exception_caller(EXCEPTION_ILLEGAL_INSTRUCTION);
         // exception_caller(EXCEPTION_ECALL_FROM_M_MODE);
         // exception_caller(EXCEPTION_LOAD_ADDRESS_MISSALIGNED);
