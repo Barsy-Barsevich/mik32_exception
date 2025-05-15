@@ -8,13 +8,25 @@ void INT_ATTR exception_handler(void)
         uint32_t mcause;
         uint32_t pc;
         uint32_t instruction;
+        uint32_t dummy1, dummy2;
         asm volatile(
-            "csrr       %0, mcause"     "\n\t"
-            "csrr       %1, mepc"       "\n\t"
-            "lw         %2, 0(%1)"      "\n\t"
-            : "=r" (mcause)
-            , "=r" (pc)
-            , "=r" (instruction)
+            "csrr       %[mcause], mcause"     "\n\t"
+            "csrr       %[pc], mepc"       "\n\t"
+            "lh         %[instr],0(%[pc])"      "\n\t"
+            "li         %[temp1],0b11"       "\n\t"
+            "and        %[temp2],%[temp1],%[instr]"     "\n\t"
+            "bne        %[temp1],%[temp2],metka_%="     "\n\t"
+            "mv         %[temp1],x0"                    "\n\t"
+            "lh         %[temp1],2(%[pc])"              "\n\t"
+            "li         %[temp2],16"                    "\n\t"
+            "sll        %[temp1],%[temp1],%[temp2]"     "\n\t"
+            "add        %[instr],%[instr],%[temp1]"     "\n\t"
+            "metka_%=:"
+            : [mcause] "=r" (mcause)
+            , [pc] "=r" (pc)
+            , [instr] "=r" (instruction)
+            , [temp1] "=r" (dummy1)
+            , [temp2] "=r" (dummy2)
         );
         exception_decoder(mcause, pc, instruction);
         HAL_DelayMs(1000);
@@ -70,7 +82,7 @@ void exception_decoder(uint32_t mcause, uint32_t pc, uint32_t instruction)
             xprintf("Unexpected exception code (0x%X)", mcause);
     }
     /* PC-4 because MEPC contains the address of next instruction */
-    xprintf(" occured at PC=0x%08X\n", pc);
+    xprintf(" occured at PC=0x%08X, instruction=0x%08X\n", pc, instruction);
 }
 
 
@@ -94,6 +106,18 @@ void exception_caller(mik32_exception_test_t exception)
         asm volatile(
             "li         t0, 0x7FFFFFFF"     "\n\t"
             "jalr       ra, t0, 0"          "\n\t"
+        );
+        break;
+    case EXCEPTION_LOAD_ADDRESS_MISSALIGNED:
+        asm volatile(
+            "li         s0, 0x7FFFFFFF"     "\n\t"
+            "lw         s0, 0(s0)"          "\n\t"
+        );
+        break;
+    case EXCEPTION_STORE_ADDRESS_MISALIGNED:
+        asm volatile(
+            "li         t0, 0x7FFFFFFE"     "\n\t"
+            "sw         t0, 0(t0)"          "\n\t"
         );
         break;
     // ...
