@@ -3,7 +3,9 @@
 .weak  exception_handler
 .weak  interrupt_handler
 
+.globl raw_trap_handler
 
+.section .trap_text
 raw_trap_handler:
     sw      x5, -4(sp)
     sw      x6, -8(sp)
