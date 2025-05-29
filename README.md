@@ -6,7 +6,7 @@ Exception means critical situation when the processor do not know what is to do.
 
 This library contains a fast trap handler that find out, what caused the trap calling, interrupt or exception. In interrupt case it jumps to interrupt handler. In exception case it jumps to weak exception handler (can be overwritten). By default, exception handler writes to the serial, which exception type happened.
 
-
+---
 ## Enums
 #### `mik32_exception_test_t`
 - `EXCEPTION_ILLEGAL_INSTRUCTION = 2` - illegal instruction execution attempt;
